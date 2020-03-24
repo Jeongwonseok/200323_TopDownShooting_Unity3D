@@ -4,7 +4,7 @@ using UnityEngine;
 
 [RequireComponent(typeof(PlayerController))]
 [RequireComponent(typeof(GunController))]
-public class Player : MonoBehaviour
+public class Player : LivingEntity
 {
     public float moveSpeed = 5;
 
@@ -12,8 +12,10 @@ public class Player : MonoBehaviour
     PlayerController controller;
     GunController gunController;
 
-    void Start()
+    // 부모 클래스를 덮어쓰고, 부모 클래스의 Start 메서드 실행
+    protected override void Start()
     {
+        base.Start();
         controller = GetComponent<PlayerController>();
         gunController = GetComponent<GunController>();
         viewCamera = Camera.main;

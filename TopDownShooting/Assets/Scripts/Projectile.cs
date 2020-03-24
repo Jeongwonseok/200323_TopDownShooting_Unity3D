@@ -6,7 +6,8 @@ public class Projectile : MonoBehaviour
 {
     public LayerMask collisionMask;
 
-    float speed = 10f;
+    float speed = 10;
+    float damage = 1;
 
     public void SetSpeed(float newSpeed)
     {
@@ -38,10 +39,20 @@ public class Projectile : MonoBehaviour
         }
     }
 
-    // 충돌 시 파괴
+    // 데미지 입히기
+    // 충돌 시 발사체 파괴
     void OnHitObject(RaycastHit hit)
     {
-        print(hit.collider.gameObject.name);
-        GameObject.Destroy(gameObject);
+        // 충돌한 오브젝트 가져오기
+        IDamageable damageableObject = hit.collider.GetComponent<IDamageable>();
+
+        // 데미지 주기
+        // 모든 게임 오브젝트에 IDamageable이 붙어있는것은 아니므로 예외 처리 해준다.
+        if (damageableObject != null)
+        {
+            damageableObject.TakeHit(damage, hit);
+        }
+
+        Destroy(gameObject);
     }
 }

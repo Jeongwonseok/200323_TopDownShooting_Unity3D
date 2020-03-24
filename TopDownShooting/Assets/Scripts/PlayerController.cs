@@ -27,7 +27,7 @@ public class PlayerController : MonoBehaviour
     }
 
     // FixedUpdate() : 이 부분은 정기적이고 짧게 반복적으로 실행되야 하기 때문에 Update() 대신 사용
-    public void FixedUpdate()
+    private void FixedUpdate()
     {
         // Time.fixedDeltaTime : 두 FixedUpdate 메소드가 호출된 시간 간격
         myRigidbody.MovePosition(myRigidbody.position + velocity * Time.fixedDeltaTime);
