@@ -2,17 +2,20 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent (typeof (PlayerController))]
+[RequireComponent(typeof(PlayerController))]
+[RequireComponent(typeof(GunController))]
 public class Player : MonoBehaviour
 {
     public float moveSpeed = 5;
 
     Camera viewCamera;
     PlayerController controller;
+    GunController gunController;
 
     void Start()
     {
         controller = GetComponent<PlayerController>();
+        gunController = GetComponent<GunController>();
         viewCamera = Camera.main;
     }
 
@@ -23,6 +26,7 @@ public class Player : MonoBehaviour
         Vector3 moveVelocity = moveInput.normalized * moveSpeed;
         controller.Move(moveVelocity);
 
+        // 바라 보는 방향 정의
         // ScreenPointToRay() : 화면 상 위치 반환
         Ray ray = viewCamera.ScreenPointToRay(Input.mousePosition);
         Plane groundPlane = new Plane(Vector3.up, Vector3.zero);
@@ -34,6 +38,12 @@ public class Player : MonoBehaviour
             Vector3 point = ray.GetPoint(rayDistance);
             //Debug.DrawLine(ray.origin, point, Color.red);
             controller.LookAt(point);
+        }
+
+        // 무기 조작 정의
+        if(Input.GetMouseButton(0))
+        {
+            gunController.Shoot();
         }
     }
 }
