@@ -7,8 +7,8 @@
       <File FileName="Assets/Scripts/Gun.cs" />
       <File FileName="Assets/Scripts/Player.cs" />
       <File FileName="Assets/Scripts/IDamageable.cs" />
-      <File FileName="Assets/Scripts/Enemy.cs" Line="21" Column="1" />
-      <File FileName="Assets/Scripts/LivingEntity.cs" Line="38" Column="93" />
+      <File FileName="Assets/Scripts/Enemy.cs" />
+      <File FileName="Assets/Scripts/LivingEntity.cs" Line="42" Column="10" />
       <File FileName="Assets/Scripts/Spawner.cs" Line="42" Column="33" />
     </Files>
     <Pads>
@@ -27,7 +27,7 @@
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="5d646ea4-cbd2-4633-bc48-9b2a3a887714" />
+  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="59a36f83-1b2c-4744-973a-afde5635fd9e" />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
