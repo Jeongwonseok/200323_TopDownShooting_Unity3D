@@ -17,17 +17,20 @@ public class Enemy : LivingEntity
 
     NavMeshAgent pathFinder;
     Transform target;
+    LivingEntity targetEntity;
     Material skinMaterial;
 
     Color originalColor;
 
-    // 공격할 수 있는 한계 거리 변수
-    float attackDistanceThreshold = 0.5f;
+    float attackDistanceThreshold = 0.5f; // 공격할 수 있는 한계 거리 변수
     float timeBetweenAttacks = 1; // 공격 사이의 지연 시간
+    float damage = 1; // 적의 공격 데미지
 
     float nextAttackTime; // 다음 공격 가능 시간
     float myCollisionRadius; // 적 반지름
     float targetCollisionRadius; // 플레이어 반지름
+
+    bool hasTarget;
 
     // 부모 클래스를 덮어쓰고, 부모 클래스의 Start 메서드 실행
     protected override void Start()
@@ -37,25 +40,44 @@ public class Enemy : LivingEntity
         skinMaterial = GetComponent<Renderer>().material;
         originalColor = skinMaterial.color;
 
-        currentState = State.Chasing;
-        target = GameObject.FindGameObjectWithTag("Player").transform;
+        // 플레이어가 존재하면 실행
+        if(GameObject.FindGameObjectWithTag("Player") != null)
+        {
+            currentState = State.Chasing;
+            hasTarget = true;
 
-        // 반지름 할당
-        myCollisionRadius = GetComponent<CapsuleCollider>().radius;
-        targetCollisionRadius = target.GetComponent<CapsuleCollider>().radius;
+            target = GameObject.FindGameObjectWithTag("Player").transform;
+            targetEntity = target.GetComponent<LivingEntity>();
+            targetEntity.OnDeath += OnTargetDeath;
 
-        StartCoroutine(UpdatePath());
+            // 반지름 할당
+            myCollisionRadius = GetComponent<CapsuleCollider>().radius;
+            targetCollisionRadius = target.GetComponent<CapsuleCollider>().radius;
+
+            StartCoroutine(UpdatePath());
+        }
+        
+    }
+
+    // 플레이어 죽으면
+    void OnTargetDeath()
+    {
+        hasTarget = false;
+        currentState = State.Idle;
     }
 
     void Update()
     {
-        if(Time.time > nextAttackTime)
+        if(hasTarget)
         {
-            float sqrDstToTarget = (target.position - transform.position).sqrMagnitude;
-            if (sqrDstToTarget < Mathf.Pow(attackDistanceThreshold + myCollisionRadius + targetCollisionRadius, 2))
+            if (Time.time > nextAttackTime)
             {
-                nextAttackTime = Time.time + timeBetweenAttacks;
-                StartCoroutine(Attack());
+                float sqrDstToTarget = (target.position - transform.position).sqrMagnitude;
+                if (sqrDstToTarget < Mathf.Pow(attackDistanceThreshold + myCollisionRadius + targetCollisionRadius, 2))
+                {
+                    nextAttackTime = Time.time + timeBetweenAttacks;
+                    StartCoroutine(Attack());
+                }
             }
         }
     }
@@ -77,9 +99,15 @@ public class Enemy : LivingEntity
         float percent = 0; // 반복 조건 변수
 
         skinMaterial.color = Color.red;
+        bool hasAppliedDamage = false; // 데미지를 적용하는 도중인지
 
         while(percent <= 1)
         {
+            if (percent >= 0.5f && !hasAppliedDamage)
+            {
+                hasAppliedDamage = true;
+                targetEntity.TakeDamage(damage);
+            }
             // 시간 * 공격 스피드
             percent += Time.deltaTime * attackSpeed;
 
@@ -103,7 +131,7 @@ public class Enemy : LivingEntity
     {
         float refreshRate = 0.25f;
 
-        while(target != null)
+        while(hasTarget)
         {
             if(currentState == State.Chasing) // 추적 상태일 때만 적 추적
             {

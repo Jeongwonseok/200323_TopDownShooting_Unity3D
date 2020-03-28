@@ -21,10 +21,18 @@ public class LivingEntity : MonoBehaviour, IDamageable
     // 인터페이스는 상속해서 쓸때 강제 구현해야함 >> 안하면 에러
     public void TakeHit(float damage, RaycastHit hit)
     {
+        // 나중에 hit 관련된 행동 정의 예정
+        //
+
+        TakeDamage(damage);
+    }
+
+    public void TakeDamage(float damage)
+    {
         health -= damage;
 
         // 사망
-        if(health <= 0)
+        if (health <= 0)
         {
             Die();
         }

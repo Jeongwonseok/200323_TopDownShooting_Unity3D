@@ -9,6 +9,23 @@ public class Projectile : MonoBehaviour
     float speed = 10;
     float damage = 1;
 
+    float lifetime = 3;
+    float skinWidth = 0.1f;
+
+    void Start()
+    {
+        Destroy(gameObject, lifetime);
+
+        // 발사체(총알)와 겹쳐있는 모든 충돌체들의 배열
+        Collider[] initialCollisions = Physics.OverlapSphere(transform.position, 0.1f, collisionMask);
+
+        // 총알이 생성되었을 때 어떤 충돌체 오브젝트와 이미 겹친(충돌한) 상태일 때
+        if(initialCollisions.Length > 0)
+        {
+            OnHitObject(initialCollisions[0]);
+        }
+    }
+
     public void SetSpeed(float newSpeed)
     {
         speed = newSpeed;
@@ -33,7 +50,8 @@ public class Projectile : MonoBehaviour
         RaycastHit hit;
 
         // QueryTriggerInteraction.Collide >> 트리거 콜라이더들과 충돌할지 안할지 정해준다.
-        if (Physics.Raycast(ray, out hit, moveDistance, collisionMask, QueryTriggerInteraction.Collide))
+        // skinWidth 더해줘서 프레임간의 값 보정 역할 해줌
+        if (Physics.Raycast(ray, out hit, moveDistance + skinWidth, collisionMask, QueryTriggerInteraction.Collide))
         {
             OnHitObject(hit);
         }
@@ -51,6 +69,21 @@ public class Projectile : MonoBehaviour
         if (damageableObject != null)
         {
             damageableObject.TakeHit(damage, hit);
+        }
+
+        Destroy(gameObject);
+    }
+
+    void OnHitObject(Collider c)
+    {
+        // 충돌한 오브젝트 가져오기
+        IDamageable damageableObject = c.GetComponent<IDamageable>();
+
+        // 데미지 주기
+        // 모든 게임 오브젝트에 IDamageable이 붙어있는것은 아니므로 예외 처리 해준다.
+        if (damageableObject != null)
+        {
+            damageableObject.TakeDamage(damage);
         }
 
         Destroy(gameObject);
