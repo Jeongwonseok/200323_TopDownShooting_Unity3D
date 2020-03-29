@@ -11,11 +11,17 @@ public class MapGenetator : MonoBehaviour
     [Range(0,1)]
     public float outlinePercent; // 타일 구분
 
+    [Range(0, 1)]
+    public float obstaclePercent; // 장애물 퍼센트
+
 	List<Coord> allTileCoords; // 모든 타일 좌표 저장 리스트
 	Queue<Coord> shuffleTileCoords; // 셔플된 좌표 저장 큐
 
     // 셔플을 위한 이유없는 시작 값
     public int seed = 10;
+
+    // 맵의 정중앙
+    Coord mapCenter;
 
     void Start()
     {
@@ -37,8 +43,11 @@ public class MapGenetator : MonoBehaviour
 		}
         // 셔플한거 큐에 저장
         shuffleTileCoords = new Queue<Coord>(Utility.ShuffleArray(allTileCoords.ToArray(), seed));
+        // 맵의 정중앙 지정
+        mapCenter = new Coord((int)mapSize.x / 2, (int)mapSize.y / 2);
 
-		string holderName = "Generated Map";
+
+        string holderName = "Generated Map";
 
         // 에디터에서 호출하려면 DestroyImmediate() 사용
         if(transform.FindChild(holderName))
@@ -61,17 +70,86 @@ public class MapGenetator : MonoBehaviour
             }
         }
 
+        // 알고리즘 통해서 탐색 참고에 사용될 map bool 배열
+        bool[,] obstacleMap = new bool[(int)mapSize.x, (int)mapSize.y];
+
         // 생성할 장애물 수
-		int obstacleCount = 10;
+		int obstacleCount = (int)(mapSize.x * mapSize.y * obstaclePercent);
+        // 현재 생성된 장애물 수
+        int currentObstacleCount = 0;
+
         // 장애물 수만큼 루프 돌면서 생성
-        for(int i=0; i<obstacleCount; i++)
+        for (int i=0; i<obstacleCount; i++)
 		{
 			Coord randomCoord = GetRandomCoord();
-            Vector3 obstaclePosition = CoordToPosition(randomCoord.x, randomCoord.y);
-            Transform newObstacle = Instantiate(obstaclePrefab, obstaclePosition + Vector3.up * 0.5f, Quaternion.identity) as Transform;
-            newObstacle.parent = mapHolder;
+            obstacleMap[randomCoord.x, randomCoord.y] = true;
+            currentObstacleCount++;
+
+            // Flood Fill 알고리즘 사용해서 생성 가능 여부 확인
+            // 이미 살펴보았던 타일들을 표시하고, 같은 타일을 계속 또 보지 않도록 하는것이 중요함!!
+            if (randomCoord != mapCenter && MapIsFullyAccessible(obstacleMap, currentObstacleCount)) // 정중앙이 아니고, 접근 가능하면
+            {
+                Vector3 obstaclePosition = CoordToPosition(randomCoord.x, randomCoord.y);
+
+                Transform newObstacle = Instantiate(obstaclePrefab, obstaclePosition + Vector3.up * 0.5f, Quaternion.identity) as Transform;
+                newObstacle.parent = mapHolder;
+            }
+            else // 생성 못하면
+            {
+                obstacleMap[randomCoord.x, randomCoord.y] = false;
+                currentObstacleCount--;
+            }
 		}
     }
+
+    // 장애물 생성 가능 여부 확인 메서드 (장애물 여부 배열, 여태 얼마나 생성되었는지 확인 변수)
+    bool MapIsFullyAccessible(bool[,] obstacleMap, int currentObstacleCount)
+    {
+        bool[,] mapFlags = new bool[obstacleMap.GetLength(0), obstacleMap.GetLength(1)];
+        Queue<Coord> queue = new Queue<Coord>();
+        queue.Enqueue(mapCenter);
+        mapFlags[mapCenter.x, mapCenter.y] = true;
+
+        // 알고리즘 내부에서 증가시키면서 마지막에 목표 타일수와 비교해서 탐색 종료하기 위한 변수
+        int accessibleTileCount = 1;
+
+        // 큐안에 좌표가 있다면 >> Flood Fill 알고리즘 시작
+        while(queue.Count > 0)
+        {
+            Coord tile = queue.Dequeue();
+
+            // 이웃한 모든 타일 탐색
+            for(int x = -1; x <= 1; x++)
+            {
+                for (int y = -1; y <= 1; y++)
+                {
+                    int neighborX = tile.x + x;
+                    int neighborY = tile.y + y;
+                    // 대각선 제외하고 탐색
+                    if (x==0 || y==0)
+                    {
+                        // 좌표가 obstacleMap 내부에 있는지 확인
+                        if(neighborX >= 0 && neighborX < obstacleMap.GetLength(0) && neighborY >= 0 && neighborY < obstacleMap.GetLength(1))
+                        {
+                            // 이 타일을 이전에 체크하지 않았고, 이것이 장애물이 아니라면
+                            if(!mapFlags[neighborX,neighborY] && !obstacleMap[neighborX,neighborY])
+                            {
+                                mapFlags[neighborX, neighborY] = true;
+                                queue.Enqueue(new Coord(neighborX, neighborY));
+                                accessibleTileCount++;
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
+        // 목표 타일 수 = 전체 타일 수 - 현재 장애물 타일 수
+        int targetAccessibleTileCount = (int)(mapSize.x * mapSize.y - currentObstacleCount);
+        // 값이 같으면 true 반환
+        return targetAccessibleTileCount == accessibleTileCount;
+    }
+
 
     // 맵의 가로 길이의 절반 만큼 왼쪽으로 이동한 점에서부터 타일 생성 시작 메서드
     Vector3 CoordToPosition(int x, int y)
@@ -99,5 +177,15 @@ public class MapGenetator : MonoBehaviour
 			y = _y;
 
 		}
-	}
+
+        // 오퍼레이터 정의 해줘야함 >> 구조체로 새로 만들었기 때문에
+        public static bool operator == (Coord c1, Coord c2)
+        {
+            return c1.x == c2.x && c1.y == c2.y;
+        }
+        public static bool operator != (Coord c1, Coord c2)
+        {
+            return !(c1 == c2);
+        }
+    }
 }
