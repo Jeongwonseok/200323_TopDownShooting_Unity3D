@@ -7,6 +7,9 @@ public class Spawner : MonoBehaviour
     public Wave[] waves;
     public Enemy enemy;
 
+    LivingEntity playerEntity;
+    Transform playerT;
+
     Wave currentWave;      // 현재 웨이브의 레퍼런 가져올 변수
     int currentWaveNumber; // 현재 웨이브 횟수
 
@@ -14,28 +17,94 @@ public class Spawner : MonoBehaviour
     int enemiesRemainingAlive;  // 살아있는 적의 수
     float nextSpawnTime;        // 다음번 스폰 시간
 
+    MapGenetator map;
+
+    // 캠핑 방지 요소 관련 변수
+    float timeBeetweenCampingChecks = 2; // 캠핑 검사 간격
+    float campThresholdDistance = 1.5f; // 캠핑 체크 사이에 움직여야할 최소 한계 거리 >> 2초안에 최소한 1.5단위는 움직여야 한다는 의미
+    float nextCampCheckTime; // 다음 검사 예정 시간
+    Vector3 campPositionOld; // 가장 최근 캠핑 체크할때 플레이어가 있었던 위치
+    bool isCamping; // 캠핑 여부
+
+    bool isDisabled; // 적 스폰 여부
+
     void Start()
     {
+        playerEntity = FindObjectOfType<Player>();
+        playerT = playerEntity.transform;
+
+        nextCampCheckTime = timeBeetweenCampingChecks + Time.time;
+        campPositionOld = playerT.position;
+
+        // 델리게이트에 플레이어 죽으면 발생될 메서드 추가
+        playerEntity.OnDeath += OnPlayerDeath;
+
+        map = FindObjectOfType<MapGenetator>();
         NextWave();
     }
 
     void Update()
     {
-        // 스폰해야 할 적이 0보다 크고, 현재 시간이 다음번 스폰 시간보다 크면
-        if(enemiesRemainingToSpawn > 0 && Time.time > nextSpawnTime)
+        if(!isDisabled)
         {
-            // 남아있는 스폰할 적 줄이기
-            enemiesRemainingToSpawn--;
-            // 다음 스폰 시간 = 현재 시간 + 스폰 시간 간격
-            nextSpawnTime = Time.time + currentWave.timeBetweenSpawns;
+            if (Time.time > nextCampCheckTime)
+            {
+                nextCampCheckTime = Time.time + timeBeetweenCampingChecks;
 
-            // 적 프리펩 생성
-            Enemy spawnedEnemy = Instantiate(enemy, Vector3.zero, Quaternion.identity) as Enemy;
-            // 상속을 통해 LivingEntity 스크립트의 델리게이트 변수에 함수가 추가된다.
-            spawnedEnemy.OnDeath += OnEnemyDeath;
+                isCamping = (Vector3.Distance(playerT.position, campPositionOld) < campThresholdDistance);
+                campPositionOld = playerT.position;
+            }
+            // 스폰해야 할 적이 0보다 크고, 현재 시간이 다음번 스폰 시간보다 크면
+            if (enemiesRemainingToSpawn > 0 && Time.time > nextSpawnTime)
+            {
+                // 남아있는 스폰할 적 줄이기
+                enemiesRemainingToSpawn--;
+                // 다음 스폰 시간 = 현재 시간 + 스폰 시간 간격
+                nextSpawnTime = Time.time + currentWave.timeBetweenSpawns;
+
+                StartCoroutine(SpawnEnemy());
+            }
         }
     }
 
+    IEnumerator SpawnEnemy()
+    {
+        float spawnDelay = 1; // 대기시간
+        float tileFlashSpeed = 4; // 타일 반짝이는 속도
+
+        Transform spawnTile = map.GetRandomOpenTile();
+        // 만약 플레이어가 캠핑중이면 랜덤하지 않은 플레이어 위치에 적 스폰
+        if (isCamping)
+        {
+            spawnTile = map.GetTileFromPosition(playerT.position);
+        }
+        Material tileMat = spawnTile.GetComponent<Renderer>().material;
+        Color initialColor = tileMat.color;
+        Color flashColor = Color.red;
+        float spawnTimer = 0; // 경과시간
+
+        // 대기시간 지나면 적 프리펩 생성하도록 지연
+        while(spawnTimer < spawnDelay)
+        {
+            tileMat.color = Color.Lerp(initialColor, flashColor, Mathf.PingPong(spawnTimer * tileFlashSpeed, 1));
+
+            spawnTimer += Time.deltaTime;
+            yield return null;
+        }
+
+        // 적 프리펩 생성
+        Enemy spawnedEnemy = Instantiate(enemy, spawnTile.position + Vector3.up, Quaternion.identity) as Enemy;
+        // 상속을 통해 LivingEntity 스크립트의 델리게이트 변수에 함수가 추가된다.
+        spawnedEnemy.OnDeath += OnEnemyDeath;
+    }
+
+    // 플레이어 죽으면 적 스폰 중지 메서드
+    void OnPlayerDeath()
+    {
+        isDisabled = true;
+    }
+
+    // 적의 수 관리 및 다음 웨이브 실행 메서드
     void OnEnemyDeath()
     {
         // 살아있는 적의 수 죽을때마다 1씩 감소

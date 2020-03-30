@@ -22,7 +22,9 @@ public class MapGenetator : MonoBehaviour
     public float tileSize; // 타일 사이즈 변수
 
 	List<Coord> allTileCoords; // 모든 타일 좌표 저장 리스트
-	Queue<Coord> shuffleTileCoords; // 셔플된 좌표 저장 큐
+    Queue<Coord> shuffleTileCoords; // 셔플된 좌표 저장 큐
+    Queue<Coord> shuffleOpenTileCoords; // 셔플된 적 스폰 좌표 저장 큐
+    Transform[,] tileMap; // tile 정보 가져오기
 
     Map currentMap;
 
@@ -35,6 +37,7 @@ public class MapGenetator : MonoBehaviour
     public void GenerateMap()
     {
         currentMap = maps[mapIndex];
+        tileMap = new Transform[currentMap.mapSize.x, currentMap.mapSize.y];
         System.Random prng = new System.Random(currentMap.seed);
         GetComponent<BoxCollider>().size = new Vector3(currentMap.mapSize.x * tileSize, 0.05f, currentMap.mapSize.y * tileSize);
 
@@ -74,6 +77,7 @@ public class MapGenetator : MonoBehaviour
                 Transform newTile = Instantiate(tilePrefab, tilePosition, Quaternion.Euler(Vector3.right * 90)) as Transform;
                 newTile.localScale = Vector3.one * (1 - outlinePercent) * tileSize;
                 newTile.parent = mapHolder;
+                tileMap[x, y] = newTile; // 타일 저장
             }
         }
 
@@ -85,6 +89,8 @@ public class MapGenetator : MonoBehaviour
 		int obstacleCount = (int)(currentMap.mapSize.x * currentMap.mapSize.y * currentMap.obstaclePercent);
         // 현재 생성된 장애물 수
         int currentObstacleCount = 0;
+        // 오픈 타일 : 모든 타일의 좌표를 복사해 가져와 초기화
+        List<Coord> allOpenCoords = new List<Coord>(allTileCoords);
 
         // 장애물 수만큼 루프 돌면서 생성
         for (int i=0; i<obstacleCount; i++)
@@ -111,6 +117,9 @@ public class MapGenetator : MonoBehaviour
                 obstacleMaterial.color = Color.Lerp(currentMap.foregroundColor, currentMap.backgroundColor, colorPercent);
                 obstacleRenderer.sharedMaterial = obstacleMaterial;
 
+                // 장애물 선택 타일 제거해주기 >> 오픈 타일 세팅
+                allOpenCoords.Remove(randomCoord);
+
             }
             else // 생성 못하면
             {
@@ -118,6 +127,8 @@ public class MapGenetator : MonoBehaviour
                 currentObstacleCount--;
             }
 		}
+        // 적 스폰 위치 셔플하기
+        shuffleOpenTileCoords = new Queue<Coord>(Utility.ShuffleArray(allOpenCoords.ToArray(), currentMap.seed));
 
         /* NavMesh 마스크 생성 */
         // 플레이어 및 적들 맵 바깥으로 나가지 못하게 마스킹
@@ -190,11 +201,21 @@ public class MapGenetator : MonoBehaviour
         return targetAccessibleTileCount == accessibleTileCount;
     }
 
-
     // 맵의 가로 길이의 절반 만큼 왼쪽으로 이동한 점에서부터 타일 생성 시작 메서드
     Vector3 CoordToPosition(int x, int y)
 	{
         return new Vector3(-currentMap.mapSize.x / 2f + 0.5f + x, 0, -currentMap.mapSize.y / 2f + 0.5f + y) * tileSize;
+    }
+
+    // 현재 플레이어 위치 반환
+    public Transform GetTileFromPosition(Vector3 position)
+    {
+        int x = Mathf.RoundToInt(position.x / tileSize + (currentMap.mapSize.x - 1) / 2f);
+        int y = Mathf.RoundToInt(position.z / tileSize + (currentMap.mapSize.y - 1) / 2f);
+        // 맵 밖에 있는 값 제외시키는 부분
+        x = Mathf.Clamp(x, 0, tileMap.GetLength(0) - 1);
+        y = Mathf.Clamp(y, 0, tileMap.GetLength(1) - 1);
+        return tileMap[x, y];
     }
 
     // 큐로부터 다음 아이템 얻어서 랜덤 좌표 반환 메서드
@@ -204,6 +225,14 @@ public class MapGenetator : MonoBehaviour
 		shuffleTileCoords.Enqueue(randomCoord);
 		return randomCoord;
 	}
+
+    // 큐로부터 다음 아이템 얻어서 적 스폰할 랜덤 좌표 반환 메서드
+    public Transform GetRandomOpenTile()
+    {
+        Coord randomCoord = shuffleOpenTileCoords.Dequeue();
+        shuffleOpenTileCoords.Enqueue(randomCoord);
+        return tileMap[randomCoord.x, randomCoord.y];
+    }
 
     // 모든 타일에 대한 좌표 구조체 생성
     [System.Serializable]
