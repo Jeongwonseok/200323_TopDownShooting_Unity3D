@@ -4,31 +4,27 @@ using UnityEngine;
 
 public class MapGenetator : MonoBehaviour
 {
+    // Map 관련 선언
+    public Map[] maps;
+    public int mapIndex;
+
     public Transform tilePrefab; // 타일
     public Transform obstaclePrefab; // 장애물
 
     public Transform navmeshFloor; // 안보이는 맵
     public Transform navmeshMaskPrefab; // 전체 맵 사방에 마스킹 할 프리펩
 
-    public Vector2 mapSize; // 원하는 맵 사이즈 변수
     public Vector2 maxMapSize; // 최대 맵 사이즈 변수
 
     [Range(0,1)]
     public float outlinePercent; // 타일 구분
-
-    [Range(0, 1)]
-    public float obstaclePercent; // 장애물 퍼센트
 
     public float tileSize; // 타일 사이즈 변수
 
 	List<Coord> allTileCoords; // 모든 타일 좌표 저장 리스트
 	Queue<Coord> shuffleTileCoords; // 셔플된 좌표 저장 큐
 
-    // 셔플을 위한 이유없는 시작 값
-    public int seed = 10;
-
-    // 맵의 정중앙
-    Coord mapCenter;
+    Map currentMap;
 
     void Start()
     {
@@ -38,22 +34,25 @@ public class MapGenetator : MonoBehaviour
     // 맵 그리기
     public void GenerateMap()
     {
-		allTileCoords = new List<Coord>();
+        currentMap = maps[mapIndex];
+        System.Random prng = new System.Random(currentMap.seed);
+        GetComponent<BoxCollider>().size = new Vector3(currentMap.mapSize.x * tileSize, 0.05f, currentMap.mapSize.y * tileSize);
+
+        /* 좌표 생성 */
+        allTileCoords = new List<Coord>();
 
         // 모든 타일 거쳐서 추가
-		for (int x = 0; x < mapSize.x; x++)
+		for (int x = 0; x < currentMap.mapSize.x; x++)
 		{
-			for (int y = 0; y < mapSize.y; y++)
+			for (int y = 0; y < currentMap.mapSize.y; y++)
 			{
 				allTileCoords.Add(new Coord(x, y));
 			}
 		}
         // 셔플한거 큐에 저장
-        shuffleTileCoords = new Queue<Coord>(Utility.ShuffleArray(allTileCoords.ToArray(), seed));
-        // 맵의 정중앙 지정
-        mapCenter = new Coord((int)mapSize.x / 2, (int)mapSize.y / 2);
+        shuffleTileCoords = new Queue<Coord>(Utility.ShuffleArray(allTileCoords.ToArray(), currentMap.seed));
 
-
+        /* 맵 홀더 오브젝트 생성 */
         string holderName = "Generated Map";
 
         // 에디터에서 호출하려면 DestroyImmediate() 사용
@@ -65,9 +64,10 @@ public class MapGenetator : MonoBehaviour
         Transform mapHolder = new GameObject(holderName).transform;
         mapHolder.parent = transform;
 
-        for(int x=0; x < mapSize.x; x++)
+        /* 타일들을 스폰 */
+        for (int x=0; x < currentMap.mapSize.x; x++)
         {
-            for (int y = 0; y < mapSize.y; y++)
+            for (int y = 0; y < currentMap.mapSize.y; y++)
             {
                 // 맵의 가로 길이의 절반 만큼 왼쪽으로 이동한 점에서부터 타일 생성 시작
                 Vector3 tilePosition = CoordToPosition(x, y);
@@ -77,11 +77,12 @@ public class MapGenetator : MonoBehaviour
             }
         }
 
+        /* 장애물들을 스폰 */
         // 알고리즘 통해서 탐색 참고에 사용될 map bool 배열
-        bool[,] obstacleMap = new bool[(int)mapSize.x, (int)mapSize.y];
+        bool[,] obstacleMap = new bool[(int)currentMap.mapSize.x, (int)currentMap.mapSize.y];
 
         // 생성할 장애물 수
-		int obstacleCount = (int)(mapSize.x * mapSize.y * obstaclePercent);
+		int obstacleCount = (int)(currentMap.mapSize.x * currentMap.mapSize.y * currentMap.obstaclePercent);
         // 현재 생성된 장애물 수
         int currentObstacleCount = 0;
 
@@ -94,13 +95,22 @@ public class MapGenetator : MonoBehaviour
 
             // Flood Fill 알고리즘 사용해서 생성 가능 여부 확인
             // 이미 살펴보았던 타일들을 표시하고, 같은 타일을 계속 또 보지 않도록 하는것이 중요함!!
-            if (randomCoord != mapCenter && MapIsFullyAccessible(obstacleMap, currentObstacleCount)) // 정중앙이 아니고, 접근 가능하면
+            if (randomCoord != currentMap.mapCenter && MapIsFullyAccessible(obstacleMap, currentObstacleCount)) // 정중앙이 아니고, 접근 가능하면
             {
+                float obstacleHeight = Mathf.Lerp(currentMap.minObstacleHeight, currentMap.maxObstacleHeight, (float)prng.NextDouble());
                 Vector3 obstaclePosition = CoordToPosition(randomCoord.x, randomCoord.y);
 
-                Transform newObstacle = Instantiate(obstaclePrefab, obstaclePosition + Vector3.up * 0.5f, Quaternion.identity) as Transform;
+                Transform newObstacle = Instantiate(obstaclePrefab, obstaclePosition + Vector3.up * obstacleHeight/2, Quaternion.identity) as Transform;
                 newObstacle.parent = mapHolder;
-                newObstacle.localScale = Vector3.one * (1 - outlinePercent) * tileSize;
+                newObstacle.localScale = new Vector3((1-outlinePercent) * tileSize, obstacleHeight, (1-outlinePercent) * tileSize);
+
+                // 장애물 색 지정
+                Renderer obstacleRenderer = newObstacle.GetComponent<Renderer>();
+                Material obstacleMaterial = new Material(obstacleRenderer.sharedMaterial);
+                float colorPercent = randomCoord.y / (float)currentMap.mapSize.y;
+                obstacleMaterial.color = Color.Lerp(currentMap.foregroundColor, currentMap.backgroundColor, colorPercent);
+                obstacleRenderer.sharedMaterial = obstacleMaterial;
+
             }
             else // 생성 못하면
             {
@@ -109,23 +119,24 @@ public class MapGenetator : MonoBehaviour
             }
 		}
 
+        /* NavMesh 마스크 생성 */
         // 플레이어 및 적들 맵 바깥으로 나가지 못하게 마스킹
         // 왼쪽
-        Transform maskLeft = Instantiate(navmeshMaskPrefab, Vector3.left * (mapSize.x + maxMapSize.x) / 4 * tileSize, Quaternion.identity) as Transform;
+        Transform maskLeft = Instantiate(navmeshMaskPrefab, Vector3.left * (currentMap.mapSize.x + maxMapSize.x) / 4f * tileSize, Quaternion.identity) as Transform;
         maskLeft.parent = mapHolder;
-        maskLeft.localScale = new Vector3((maxMapSize.x - mapSize.x) / 2, 1, mapSize.y) * tileSize;
+        maskLeft.localScale = new Vector3((maxMapSize.x - currentMap.mapSize.x) / 2f, 1, currentMap.mapSize.y) * tileSize;
         // 오른쪽
-        Transform maskRight = Instantiate(navmeshMaskPrefab, Vector3.right * (mapSize.x + maxMapSize.x) / 4 * tileSize, Quaternion.identity) as Transform;
+        Transform maskRight = Instantiate(navmeshMaskPrefab, Vector3.right * (currentMap.mapSize.x + maxMapSize.x) / 4f * tileSize, Quaternion.identity) as Transform;
         maskRight.parent = mapHolder;
-        maskRight.localScale = new Vector3((maxMapSize.x - mapSize.x) / 2, 1, mapSize.y) * tileSize;
+        maskRight.localScale = new Vector3((maxMapSize.x - currentMap.mapSize.x) / 2f, 1, currentMap.mapSize.y) * tileSize;
         // 위쪽
-        Transform maskTop = Instantiate(navmeshMaskPrefab, Vector3.forward * (mapSize.y + maxMapSize.y) / 4 * tileSize, Quaternion.identity) as Transform;
+        Transform maskTop = Instantiate(navmeshMaskPrefab, Vector3.forward * (currentMap.mapSize.y + maxMapSize.y) / 4f * tileSize, Quaternion.identity) as Transform;
         maskTop.parent = mapHolder;
-        maskTop.localScale = new Vector3(maxMapSize.x, 1, (maxMapSize.y - mapSize.y) / 2) * tileSize;
+        maskTop.localScale = new Vector3(maxMapSize.x, 1, (maxMapSize.y - currentMap.mapSize.y) / 2f) * tileSize;
         // 아래쪽
-        Transform maskBottom = Instantiate(navmeshMaskPrefab, Vector3.back * (mapSize.y + maxMapSize.y) / 4 * tileSize, Quaternion.identity) as Transform;
+        Transform maskBottom = Instantiate(navmeshMaskPrefab, Vector3.back * (currentMap.mapSize.y + maxMapSize.y) / 4f * tileSize, Quaternion.identity) as Transform;
         maskBottom.parent = mapHolder;
-        maskBottom.localScale = new Vector3(maxMapSize.x, 1, (maxMapSize.y - mapSize.y) / 2) * tileSize;
+        maskBottom.localScale = new Vector3(maxMapSize.x, 1, (maxMapSize.y - currentMap.mapSize.y) / 2f) * tileSize;
 
         // 네비게이션 베이킹 할 안보이는 전체 맵 크기 지정
         navmeshFloor.localScale = new Vector3(maxMapSize.x, maxMapSize.y) * tileSize;
@@ -136,8 +147,8 @@ public class MapGenetator : MonoBehaviour
     {
         bool[,] mapFlags = new bool[obstacleMap.GetLength(0), obstacleMap.GetLength(1)];
         Queue<Coord> queue = new Queue<Coord>();
-        queue.Enqueue(mapCenter);
-        mapFlags[mapCenter.x, mapCenter.y] = true;
+        queue.Enqueue(currentMap.mapCenter);
+        mapFlags[currentMap.mapCenter.x, currentMap.mapCenter.y] = true;
 
         // 알고리즘 내부에서 증가시키면서 마지막에 목표 타일수와 비교해서 탐색 종료하기 위한 변수
         int accessibleTileCount = 1;
@@ -174,7 +185,7 @@ public class MapGenetator : MonoBehaviour
             }
         }
         // 목표 타일 수 = 전체 타일 수 - 현재 장애물 타일 수
-        int targetAccessibleTileCount = (int)(mapSize.x * mapSize.y - currentObstacleCount);
+        int targetAccessibleTileCount = (int)(currentMap.mapSize.x * currentMap.mapSize.y - currentObstacleCount);
         // 값이 같으면 true 반환
         return targetAccessibleTileCount == accessibleTileCount;
     }
@@ -183,7 +194,7 @@ public class MapGenetator : MonoBehaviour
     // 맵의 가로 길이의 절반 만큼 왼쪽으로 이동한 점에서부터 타일 생성 시작 메서드
     Vector3 CoordToPosition(int x, int y)
 	{
-        return new Vector3(-mapSize.x / 2 + 0.5f + x, 0, -mapSize.y / 2 + 0.5f + y) * tileSize;
+        return new Vector3(-currentMap.mapSize.x / 2f + 0.5f + x, 0, -currentMap.mapSize.y / 2f + 0.5f + y) * tileSize;
     }
 
     // 큐로부터 다음 아이템 얻어서 랜덤 좌표 반환 메서드
@@ -195,6 +206,7 @@ public class MapGenetator : MonoBehaviour
 	}
 
     // 모든 타일에 대한 좌표 구조체 생성
+    [System.Serializable]
     public struct Coord
 	{
 		public int x;
@@ -215,6 +227,28 @@ public class MapGenetator : MonoBehaviour
         public static bool operator != (Coord c1, Coord c2)
         {
             return !(c1 == c2);
+        }
+    }
+
+    [System.Serializable]
+    public class Map
+    {
+        public Coord mapSize; // 원하는 맵 사이즈 변수
+        [Range(0,1)]
+        public float obstaclePercent; // 장애물 퍼센트
+        public int seed; // 셔플을 위한 이유없는 시작 값
+        public float minObstacleHeight;
+        public float maxObstacleHeight;
+        public Color foregroundColor;
+        public Color backgroundColor;
+
+        // 맵의 정중앙 지정
+        public Coord mapCenter
+        {
+            get
+            {
+                return new Coord(mapSize.x / 2, mapSize.y / 2);
+            }
         }
     }
 }
