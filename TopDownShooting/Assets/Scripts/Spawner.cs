@@ -28,6 +28,9 @@ public class Spawner : MonoBehaviour
 
     bool isDisabled; // 적 스폰 여부
 
+    // Wave 관련 델리게이트 생성
+    public event System.Action<int> OnNewWave;
+
     void Start()
     {
         playerEntity = FindObjectOfType<Player>();
@@ -122,10 +125,9 @@ public class Spawner : MonoBehaviour
     {
         // 현재 웨이브
         currentWaveNumber++;
-        print("Wave : " + currentWaveNumber);
 
         // 배열 예외 처리해주기
-        if(currentWaveNumber-1 < waves.Length)
+        if(currentWaveNumber - 1 < waves.Length)
         {
             currentWave = waves[currentWaveNumber - 1];
 
@@ -133,7 +135,19 @@ public class Spawner : MonoBehaviour
             enemiesRemainingToSpawn = currentWave.enemyCount;
             // 살아있는 적의 수에 남아있는 스폰할 적의 수 대입
             enemiesRemainingAlive = enemiesRemainingToSpawn;
+
+            if(OnNewWave != null)
+            {
+                OnNewWave(currentWaveNumber);
+            }
+            ResetPlayerPosition();
         }
+    }
+
+    // 플레이어 위치 초기화 메서드
+    void ResetPlayerPosition()
+    {
+        playerT.position = map.GetTileFromPosition(Vector3.zero).position + Vector3.up * 3; 
     }
 
     [System.Serializable]

@@ -30,6 +30,13 @@ public class MapGenetator : MonoBehaviour
 
     void Start()
     {
+        FindObjectOfType<Spawner>().OnNewWave += OnNewWave;
+    }
+
+    // Spawner 스크립트에 있는 NextWave() 메서드에서 실행될분 함수 >> 실제 맵 그리기 실행 부분
+    void OnNewWave(int waveNumber)
+    {
+        mapIndex = waveNumber - 1;
         GenerateMap();
     }
 
