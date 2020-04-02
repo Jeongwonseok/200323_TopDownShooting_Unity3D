@@ -9,7 +9,17 @@ public class Gun : MonoBehaviour
     public float msBetweenShots = 100;  // 연사력 (밀리초)
     public float muzzleVelocity = 35;   // 총알 속력
 
+    public Transform shell;
+    public Transform shellEjection;
+
+    MuzzleFlash muzzleflash;
+
     float nextShotTime;
+
+    void Start()
+    {
+        muzzleflash = GetComponent<MuzzleFlash>();
+    }
 
     // 총알 생성
     public void Shoot()
@@ -21,6 +31,11 @@ public class Gun : MonoBehaviour
 
             Projectile newProjectile = Instantiate(projectile, muzzle.position, muzzle.rotation) as Projectile;
             newProjectile.SetSpeed(muzzleVelocity);
+
+            Instantiate(shell, shellEjection.position, shellEjection.rotation);
+
+            // 총알 이펙트 쏠때마다 활성화
+            muzzleflash.Activate();
         }
     }
 }
