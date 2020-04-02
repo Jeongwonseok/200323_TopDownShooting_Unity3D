@@ -22,7 +22,7 @@ public class Projectile : MonoBehaviour
         // 총알이 생성되었을 때 어떤 충돌체 오브젝트와 이미 겹친(충돌한) 상태일 때
         if(initialCollisions.Length > 0)
         {
-            OnHitObject(initialCollisions[0]);
+            OnHitObject(initialCollisions[0], transform.position);
         }
     }
 
@@ -53,28 +53,11 @@ public class Projectile : MonoBehaviour
         // skinWidth 더해줘서 프레임간의 값 보정 역할 해줌
         if (Physics.Raycast(ray, out hit, moveDistance + skinWidth, collisionMask, QueryTriggerInteraction.Collide))
         {
-            OnHitObject(hit);
+            OnHitObject(hit.collider, hit.point);
         }
     }
 
-    // 데미지 입히기
-    // 충돌 시 발사체 파괴
-    void OnHitObject(RaycastHit hit)
-    {
-        // 충돌한 오브젝트 가져오기
-        IDamageable damageableObject = hit.collider.GetComponent<IDamageable>();
-
-        // 데미지 주기
-        // 모든 게임 오브젝트에 IDamageable이 붙어있는것은 아니므로 예외 처리 해준다.
-        if (damageableObject != null)
-        {
-            damageableObject.TakeHit(damage, hit);
-        }
-
-        Destroy(gameObject);
-    }
-
-    void OnHitObject(Collider c)
+    void OnHitObject(Collider c, Vector3 hitPoint)
     {
         // 충돌한 오브젝트 가져오기
         IDamageable damageableObject = c.GetComponent<IDamageable>();
@@ -83,7 +66,7 @@ public class Projectile : MonoBehaviour
         // 모든 게임 오브젝트에 IDamageable이 붙어있는것은 아니므로 예외 처리 해준다.
         if (damageableObject != null)
         {
-            damageableObject.TakeDamage(damage);
+            damageableObject.TakeHit(damage, hitPoint, transform.forward);
         }
 
         Destroy(gameObject);

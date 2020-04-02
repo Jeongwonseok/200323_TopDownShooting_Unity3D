@@ -19,15 +19,16 @@ public class LivingEntity : MonoBehaviour, IDamageable
     }
 
     // 인터페이스는 상속해서 쓸때 강제 구현해야함 >> 안하면 에러
-    public void TakeHit(float damage, RaycastHit hit)
+    // 추상클래스로 만들어서 자식 클래스에서 오버라이딩 할수 있도록!!
+    public virtual void TakeHit(float damage, Vector3 hitPoint, Vector3 hitDirection)
     {
         // 나중에 hit 관련된 행동 정의 예정
-        //
 
         TakeDamage(damage);
     }
 
-    public void TakeDamage(float damage)
+    // 추상클래스로 만들어서 자식 클래스에서 오버라이딩 할수 있도록!!
+    public virtual void TakeDamage(float damage)
     {
         health -= damage;
 
