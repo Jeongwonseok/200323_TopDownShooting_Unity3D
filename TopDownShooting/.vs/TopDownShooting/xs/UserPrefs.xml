@@ -1,29 +1,30 @@
 ﻿<Properties StartupConfiguration="{18B3D262-EE77-B2DB-C3BE-F5AD584479F7}|">
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Gun.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Editor/MapEditor.cs">
     <Files>
-      <File FileName="Assets/Scripts/Player.cs" Line="1" Column="1" />
-      <File FileName="Assets/Editor/MapEditor.cs" />
-      <File FileName="Assets/Scripts/Utility.cs" />
-      <File FileName="Assets/Scripts/MapGenetator.cs" />
+      <File FileName="Assets/Editor/MapEditor.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/MapGenetator.cs" Line="29" Column="6" />
+      <File FileName="Assets/Scripts/Utility.cs" Line="7" Column="55" />
       <File FileName="Assets/Scripts/Spawner.cs" />
-      <File FileName="Assets/Scripts/GameUI.cs" Line="36" Column="1" />
-      <File FileName="Assets/Scripts/Enemy.cs" Line="68" Column="165" />
-      <File FileName="Assets/Scripts/LivingEntity.cs" Line="25" Column="32" />
-      <File FileName="Assets/Scripts/IDamageable.cs" Line="11" Column="1" />
-      <File FileName="Assets/Scripts/Projectile.cs" Line="66" Column="59" />
-      <File FileName="Assets/Scripts/Shell.cs" Line="21" Column="32" />
-      <File FileName="Assets/Scripts/Gun.cs" Line="37" Column="31" />
+      <File FileName="Assets/Scripts/GameUI.cs" />
+      <File FileName="Assets/Scripts/Enemy.cs" />
+      <File FileName="Assets/Scripts/LivingEntity.cs" />
+      <File FileName="Assets/Scripts/IDamageable.cs" />
+      <File FileName="Assets/Scripts/Shell.cs" />
       <File FileName="Assets/Scripts/MuzzleFlash.cs" Line="18" Column="8" />
+      <File FileName="Assets/Scripts/Player.cs" Line="53" Column="10" />
+      <File FileName="Assets/Scripts/GunController.cs" Line="8" Column="28" />
+      <File FileName="Assets/Scripts/Gun.cs" Line="13" Column="49" />
+      <File FileName="Assets/Scripts/Projectile.cs" Line="8" Column="41" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
           <Node name="TopDownShooting" expanded="True">
             <Node name="Assets" expanded="True">
-              <Node name="Editor" expanded="True" />
-              <Node name="Scripts" expanded="True">
-                <Node name="Gun.cs" selected="True" />
+              <Node name="Editor" expanded="True">
+                <Node name="MapEditor.cs" selected="True" />
               </Node>
+              <Node name="Scripts" expanded="True" />
             </Node>
           </Node>
         </State>
@@ -32,7 +33,7 @@
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="03b8b25a-51d0-4c74-81eb-9fe5ef15bcc3" />
+  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="fe924d07-0c42-4df2-818e-ea7224756fac" />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>

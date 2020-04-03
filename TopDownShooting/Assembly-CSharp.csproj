@@ -97,14 +97,14 @@
     <Reference Include="Unity.Rider.Editor">
       <HintPath>/Users/jws/Desktop/200323_TopDownShooting_Unity3D/TopDownShooting/Library/ScriptAssemblies/Unity.Rider.Editor.dll</HintPath>
     </Reference>
+    <Reference Include="Unity.2D.Sprite.Editor">
+      <HintPath>/Users/jws/Desktop/200323_TopDownShooting_Unity3D/TopDownShooting/Library/ScriptAssemblies/Unity.2D.Sprite.Editor.dll</HintPath>
+    </Reference>
     <Reference Include="Unity.TextMeshPro">
       <HintPath>/Users/jws/Desktop/200323_TopDownShooting_Unity3D/TopDownShooting/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
     </Reference>
     <Reference Include="UnityEditor.UI">
       <HintPath>/Users/jws/Desktop/200323_TopDownShooting_Unity3D/TopDownShooting/Library/ScriptAssemblies/UnityEditor.UI.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.2D.Sprite.Editor">
-      <HintPath>/Users/jws/Desktop/200323_TopDownShooting_Unity3D/TopDownShooting/Library/ScriptAssemblies/Unity.2D.Sprite.Editor.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AIModule">
       <HintPath>/Applications/Unity/Hub/Editor/2019.2.9f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.AIModule.dll</HintPath>

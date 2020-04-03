@@ -31,11 +31,20 @@ public class GunController : MonoBehaviour
     }
 
     // 총 쏘기
-    public void Shoot()
+    public void OnTriggerHold()
     {
         if(equippedGun != null)
         {
-            equippedGun.Shoot();
+            equippedGun.OnTriggerHold();
+        }
+    }
+
+    // 총 쏘기 이후
+    public void OnTriggerRelease()
+    {
+        if (equippedGun != null)
+        {
+            equippedGun.OnTriggerRelease();
         }
     }
 }

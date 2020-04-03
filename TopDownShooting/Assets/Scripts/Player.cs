@@ -43,9 +43,15 @@ public class Player : LivingEntity
         }
 
         // 무기 조작 정의
+        // 마우스 누를때,
         if(Input.GetMouseButton(0))
         {
-            gunController.Shoot();
+            gunController.OnTriggerHold();
+        }
+        // 마우스 뗄때,
+        if (Input.GetMouseButtonUp(0))
+        {
+            gunController.OnTriggerRelease();
         }
     }
 }
