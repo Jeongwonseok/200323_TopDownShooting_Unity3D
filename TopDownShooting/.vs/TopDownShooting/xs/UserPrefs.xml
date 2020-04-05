@@ -1,10 +1,11 @@
 ﻿<Properties StartupConfiguration="{18B3D262-EE77-B2DB-C3BE-F5AD584479F7}|">
   <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/MapGenetator.cs">
     <Files>
-      <File FileName="Assets/Scripts/Spawner.cs" Line="165" Column="42" />
-      <File FileName="Assets/Scripts/Enemy.cs" Line="84" Column="19" />
-      <File FileName="Assets/Scripts/LivingEntity.cs" Line="23" Column="29" />
-      <File FileName="Assets/Scripts/MapGenetator.cs" Line="14" Column="29" />
+      <File FileName="Assets/Scripts/Player.cs" Line="46" Column="19" />
+      <File FileName="Assets/Scripts/GunController.cs" Line="55" Column="42" />
+      <File FileName="Assets/Scripts/Crosshairs.cs" Line="31" Column="34" />
+      <File FileName="Assets/Scripts/Spawner.cs" Line="96" Column="55" />
+      <File FileName="Assets/Scripts/MapGenetator.cs" Line="153" Column="90" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">

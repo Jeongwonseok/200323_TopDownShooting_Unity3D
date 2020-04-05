@@ -8,6 +8,8 @@ public class Player : LivingEntity
 {
     public float moveSpeed = 5;
 
+    public Crosshairs crosshairs;
+
     Camera viewCamera;
     PlayerController controller;
     GunController gunController;
@@ -31,7 +33,7 @@ public class Player : LivingEntity
         // 바라 보는 방향 정의
         // ScreenPointToRay() : 화면 상 위치 반환
         Ray ray = viewCamera.ScreenPointToRay(Input.mousePosition);
-        Plane groundPlane = new Plane(Vector3.up, Vector3.zero);
+        Plane groundPlane = new Plane(Vector3.up, Vector3.up * gunController.GunHeight);
         float rayDistance;
 
         // ray와 바닥 plane이 교차한다면
@@ -40,6 +42,8 @@ public class Player : LivingEntity
             Vector3 point = ray.GetPoint(rayDistance);
             //Debug.DrawLine(ray.origin, point, Color.red);
             controller.LookAt(point);
+            crosshairs.transform.position = point;
+            crosshairs.DetectTargets(ray);
         }
 
         // 무기 조작 정의
