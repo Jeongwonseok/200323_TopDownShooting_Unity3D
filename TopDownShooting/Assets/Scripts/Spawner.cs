@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Spawner : MonoBehaviour
 {
+    public bool devMode; // 발전 모드 여부 변수
+
     public Wave[] waves;
     public Enemy enemy;
 
@@ -57,15 +59,31 @@ public class Spawner : MonoBehaviour
                 isCamping = (Vector3.Distance(playerT.position, campPositionOld) < campThresholdDistance);
                 campPositionOld = playerT.position;
             }
-            // 스폰해야 할 적이 0보다 크고, 현재 시간이 다음번 스폰 시간보다 크면
-            if (enemiesRemainingToSpawn > 0 && Time.time > nextSpawnTime)
+            // 스폰해야 할 적이 0보다 크거나 infinite가 true이고, 현재 시간이 다음번 스폰 시간보다 크면
+            if ((enemiesRemainingToSpawn > 0 || currentWave.infinite) && Time.time > nextSpawnTime)
             {
                 // 남아있는 스폰할 적 줄이기
                 enemiesRemainingToSpawn--;
                 // 다음 스폰 시간 = 현재 시간 + 스폰 시간 간격
                 nextSpawnTime = Time.time + currentWave.timeBetweenSpawns;
 
-                StartCoroutine(SpawnEnemy());
+                StartCoroutine("SpawnEnemy");
+            }
+        }
+
+        // 개발자 모드 추가
+        if(devMode)
+        {
+            if(Input.GetKeyDown(KeyCode.Space))
+            {
+                StopCoroutine("SpawnEnemy");
+
+                // 적이 존재하면 적 생성하는 Spawner 전부 파괴하고 다음 Wave로 전환
+                foreach(Enemy enemy in FindObjectsOfType<Enemy>())
+                {
+                    GameObject.Destroy(enemy.gameObject);
+                }
+                NextWave();
             }
         }
     }
@@ -99,6 +117,7 @@ public class Spawner : MonoBehaviour
         Enemy spawnedEnemy = Instantiate(enemy, spawnTile.position + Vector3.up, Quaternion.identity) as Enemy;
         // 상속을 통해 LivingEntity 스크립트의 델리게이트 변수에 함수가 추가된다.
         spawnedEnemy.OnDeath += OnEnemyDeath;
+        spawnedEnemy.SetCharacteristics(currentWave.moveSpeed, currentWave.hitsToKillPlayer, currentWave.enemyHealth, currentWave.skinColor);
     }
 
     // 플레이어 죽으면 적 스폰 중지 메서드
@@ -154,8 +173,14 @@ public class Spawner : MonoBehaviour
     // 웨이브 정보 저장할 클래스
     public class Wave
     {
+        public bool infinite; // 무한대 생성 관련 변수
+
         public int enemyCount; // 적의 수
         public float timeBetweenSpawns; // 스폰 간격
 
+        public float moveSpeed; // 적의 속도
+        public int hitsToKillPlayer; // 플레이어 공격 횟수
+        public float enemyHealth; // 적 hp
+        public Color skinColor; // 적 색상
     }
 }

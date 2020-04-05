@@ -11,6 +11,7 @@ public class MapGenetator : MonoBehaviour
     public Transform tilePrefab; // 타일
     public Transform obstaclePrefab; // 장애물
 
+    public Transform mapFloor; // 맵의 바닥
     public Transform navmeshFloor; // 안보이는 맵
     public Transform navmeshMaskPrefab; // 전체 맵 사방에 마스킹 할 프리펩
 
@@ -46,7 +47,6 @@ public class MapGenetator : MonoBehaviour
         currentMap = maps[mapIndex];
         tileMap = new Transform[currentMap.mapSize.x, currentMap.mapSize.y];
         System.Random prng = new System.Random(currentMap.seed);
-        GetComponent<BoxCollider>().size = new Vector3(currentMap.mapSize.x * tileSize, 0.05f, currentMap.mapSize.y * tileSize);
 
         /* 좌표 생성 */
         allTileCoords = new List<Coord>();
@@ -133,7 +133,7 @@ public class MapGenetator : MonoBehaviour
                 obstacleMap[randomCoord.x, randomCoord.y] = false;
                 currentObstacleCount--;
             }
-		}
+		} 
         // 적 스폰 위치 셔플하기
         shuffleOpenTileCoords = new Queue<Coord>(Utility.ShuffleArray(allOpenCoords.ToArray(), currentMap.seed));
 
@@ -158,6 +158,7 @@ public class MapGenetator : MonoBehaviour
 
         // 네비게이션 베이킹 할 안보이는 전체 맵 크기 지정
         navmeshFloor.localScale = new Vector3(maxMapSize.x, maxMapSize.y) * tileSize;
+        mapFloor.localScale = new Vector3(currentMap.mapSize.x * tileSize, currentMap.mapSize.y * tileSize);
     }
 
     // 장애물 생성 가능 여부 확인 메서드 (장애물 여부 배열, 여태 얼마나 생성되었는지 확인 변수)

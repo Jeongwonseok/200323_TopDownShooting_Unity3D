@@ -32,35 +32,62 @@ public class Enemy : LivingEntity
     float myCollisionRadius; // 적 반지름
     float targetCollisionRadius; // 플레이어 반지름
 
-    bool hasTarget;
+    bool hasTarget; // 플레이어를 타겟으로 가지는 여부 변수
+
+    // Start() 전에 호출
+    void Awake()
+    {
+        pathFinder = GetComponent<NavMeshAgent>();
+
+        // 플레이어가 존재하면 실행
+        if (GameObject.FindGameObjectWithTag("Player") != null)
+        {
+            hasTarget = true;
+
+            target = GameObject.FindGameObjectWithTag("Player").transform;
+            targetEntity = target.GetComponent<LivingEntity>();
+
+            // 반지름 할당
+            myCollisionRadius = GetComponent<CapsuleCollider>().radius;
+            targetCollisionRadius = target.GetComponent<CapsuleCollider>().radius;
+        }
+    }
 
     // 부모 클래스를 덮어쓰고, 부모 클래스의 Start 메서드 실행
     protected override void Start()
     {
         base.Start();
-        pathFinder = GetComponent<NavMeshAgent>();
-        skinMaterial = GetComponent<Renderer>().material;
-        originalColor = skinMaterial.color;
 
         // 플레이어가 존재하면 실행
-        if(GameObject.FindGameObjectWithTag("Player") != null)
+        if(hasTarget)
         {
             currentState = State.Chasing;
-            hasTarget = true;
-
-            target = GameObject.FindGameObjectWithTag("Player").transform;
-            targetEntity = target.GetComponent<LivingEntity>();
             targetEntity.OnDeath += OnTargetDeath;
-
-            // 반지름 할당
-            myCollisionRadius = GetComponent<CapsuleCollider>().radius;
-            targetCollisionRadius = target.GetComponent<CapsuleCollider>().radius;
 
             StartCoroutine(UpdatePath());
         }
         
     }
 
+    // 적의 특성 정의
+    public void SetCharacteristics(float moveSpeed, int hitsToKillPlayer, float enemyHealth, Color skinColor)
+    {
+        pathFinder.speed = moveSpeed; // 적의 속도 정의
+
+        if(hasTarget)
+        {
+            // Mathf.Ceil() : 소수점 내림 >> 정수 반환
+            damage = Mathf.Ceil(targetEntity.startingHealth / hitsToKillPlayer); // 데미지 정의
+        }
+        startingHealth = enemyHealth;
+
+        // 적 색상 변경
+        skinMaterial = GetComponent<Renderer>().material;
+        skinMaterial.color = skinColor;
+        originalColor = skinMaterial.color;
+    }
+
+    // 적 -> 플레이어 공격 관련 애니메이션 정의
     public override void TakeHit(float damage, Vector3 hitPoint, Vector3 hitDirection)
     {
         if(damage >= health)
