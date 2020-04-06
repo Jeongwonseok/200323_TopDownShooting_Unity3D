@@ -1,11 +1,13 @@
 ﻿<Properties StartupConfiguration="{18B3D262-EE77-B2DB-C3BE-F5AD584479F7}|">
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/MapGenetator.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/GunController.cs">
     <Files>
-      <File FileName="Assets/Scripts/Player.cs" Line="46" Column="19" />
-      <File FileName="Assets/Scripts/GunController.cs" Line="55" Column="42" />
-      <File FileName="Assets/Scripts/Crosshairs.cs" Line="31" Column="34" />
-      <File FileName="Assets/Scripts/Spawner.cs" Line="96" Column="55" />
+      <File FileName="Assets/Scripts/Crosshairs.cs" />
+      <File FileName="Assets/Scripts/Spawner.cs" />
       <File FileName="Assets/Scripts/MapGenetator.cs" Line="153" Column="90" />
+      <File FileName="Assets/Scripts/Enemy.cs" Line="154" Column="76" />
+      <File FileName="Assets/Scripts/Gun.cs" Line="25" Column="28" />
+      <File FileName="Assets/Scripts/GunController.cs" Line="71" Column="30" />
+      <File FileName="Assets/Scripts/Player.cs" Line="69" Column="36" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
@@ -14,7 +16,7 @@
             <Node name="Assets" expanded="True">
               <Node name="Editor" expanded="True" />
               <Node name="Scripts" expanded="True">
-                <Node name="MapGenetator.cs" selected="True" />
+                <Node name="GunController.cs" selected="True" />
               </Node>
             </Node>
           </Node>
@@ -24,7 +26,7 @@
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="d4c43a58-c814-49c0-81df-d99c7a7b0a6c" />
+  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="f0223771-aa6d-4cdf-a128-cf89f2c6c9da" />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>

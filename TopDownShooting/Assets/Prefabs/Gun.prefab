@@ -42,7 +42,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9194531406641467432}
-  - component: {fileID: 3533071059020722198}
+  - component: {fileID: -4538026781733444488}
   - component: {fileID: 3305427095016874532}
   m_Layer: 0
   m_Name: Gun
@@ -70,7 +70,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3533071059020722198
+--- !u!114 &-4538026781733444488
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -91,6 +91,12 @@ MonoBehaviour:
   msBetweenShots: 100
   muzzleVelocity: 35
   burstCount: 3
+  projectilesPerMag: 10
+  reloadTime: 0.3
+  kickMinMax: {x: 0.05, y: 0.2}
+  recoilAngleMinMax: {x: 3, y: 5}
+  recoilMoveSettleSpeed: 0.1
+  recoilRotationSettleSpeed: 0.1
   shell: {fileID: 6054852624821142095, guid: 9112b56b25606419999218b90bd0447a, type: 3}
   shellEjection: {fileID: 6710920431927641479}
 --- !u!114 &3305427095016874532
