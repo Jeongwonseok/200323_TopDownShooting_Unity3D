@@ -82,7 +82,7 @@ public class Enemy : LivingEntity
         startingHealth = enemyHealth;
 
         // 적 색상 변경
-        skinMaterial = GetComponent<Renderer>().material;
+        skinMaterial = GetComponent<Renderer>().sharedMaterial;
         skinMaterial.color = skinColor;
         originalColor = skinMaterial.color;
     }

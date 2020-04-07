@@ -5,16 +5,12 @@ using UnityEngine;
 public class GunController : MonoBehaviour
 {
     public Transform weaponHold;
-    public Gun startingGun;
+    public Gun[] allGuns;
     Gun equippedGun; // 장착중인 총 저장 변수
 
     void Start()
     {
-        // 시작하자마자 플레이어에 Gun 부착
-        if(startingGun != null)
-        {
-            EquipGun(startingGun);
-        }
+        
     }
 
     // Gun 장착
@@ -28,6 +24,11 @@ public class GunController : MonoBehaviour
 
         // 총이 플레이어와 같이 회전할 수 있도록 weaponHold의 자식으로 넣기 
         equippedGun.transform.parent = weaponHold;
+    }
+
+    public void EquipGun(int weaponIndex)
+    {
+        EquipGun(allGuns[weaponIndex]);
     }
 
     // 총 쏘기
