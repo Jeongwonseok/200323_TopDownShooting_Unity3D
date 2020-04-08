@@ -969,6 +969,8 @@ MonoBehaviour:
   recoilRotationSettleSpeed: 0.1
   shell: {fileID: 6054852624821142095, guid: 9112b56b25606419999218b90bd0447a, type: 3}
   shellEjection: {fileID: 2998311997160688991}
+  shootAudio: {fileID: 8300000, guid: f33a3d93a96724280aa243d15e1bc6db, type: 3}
+  reloadAudio: {fileID: 8300000, guid: 42dbeaf3877fc4113a5a9f215d648843, type: 3}
 --- !u!114 &6440959033776401148
 MonoBehaviour:
   m_ObjectHideFlags: 0
