@@ -29,6 +29,7 @@ public class Player : LivingEntity
         FindObjectOfType<Spawner>().OnNewWave += OnNewWave;
     }
 
+    // Wave 변경 시 HP 초기화 및 새로운 Gun 장착
     void OnNewWave(int waveNumber)
     {
         health = startingHealth;
@@ -80,5 +81,12 @@ public class Player : LivingEntity
         {
             gunController.Reload();
         }
+    }
+
+    // 플레이어 죽으면 사운드 Override
+    public override void Die()
+    {
+        AudioManager.instance.PlaySound("Player Death", transform.position);
+        base.Die();
     }
 }

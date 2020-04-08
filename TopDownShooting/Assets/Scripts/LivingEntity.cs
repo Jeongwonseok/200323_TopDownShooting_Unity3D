@@ -39,8 +39,10 @@ public class LivingEntity : MonoBehaviour, IDamageable
         }
     }
 
+    // 플레이어 사망
+    // Player 스크립트에서 Override 하기 위해 추상 메서드로 선언
     [ContextMenu("Self Destruct")]
-    protected void Die()
+    public virtual void Die()
     {
         dead = true;
 

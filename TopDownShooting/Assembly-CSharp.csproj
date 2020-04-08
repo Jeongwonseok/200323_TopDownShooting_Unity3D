@@ -77,6 +77,7 @@
     <Compile Include="Assets\Scripts\PlayerController.cs" />
     <Compile Include="Assets\Scripts\Projectile.cs" />
     <Compile Include="Assets\Scripts\Shell.cs" />
+    <Compile Include="Assets\Scripts\SoundLibrary.cs" />
     <Compile Include="Assets\Scripts\Spawner.cs" />
     <Compile Include="Assets\Scripts\Utility.cs" />
     <Reference Include="Unity.Timeline.Editor">

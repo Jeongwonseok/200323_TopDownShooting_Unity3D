@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class MusicManager : MonoBehaviour
 {
+    // BGM 관련 변수
     public AudioClip mainTheme;
     public AudioClip menuTheme;
 

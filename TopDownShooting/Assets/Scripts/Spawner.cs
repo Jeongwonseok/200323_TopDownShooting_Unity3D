@@ -88,6 +88,7 @@ public class Spawner : MonoBehaviour
         }
     }
 
+    // Enemy 생성 Animation 코루틴
     IEnumerator SpawnEnemy()
     {
         float spawnDelay = 1; // 대기시간
@@ -142,6 +143,11 @@ public class Spawner : MonoBehaviour
     // 다음번 웨이브 일으키는 메서드
     void NextWave()
     {
+        if(currentWaveNumber > 0)
+        {
+            AudioManager.instance.PlaySound2D("Level Complete");
+        }
+
         // 현재 웨이브
         currentWaveNumber++;
 
@@ -169,8 +175,8 @@ public class Spawner : MonoBehaviour
         playerT.position = map.GetTileFromPosition(Vector3.zero).position + Vector3.up * 3; 
     }
 
-    [System.Serializable]
     // 웨이브 정보 저장할 클래스
+    [System.Serializable]
     public class Wave
     {
         public bool infinite; // 무한대 생성 관련 변수

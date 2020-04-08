@@ -41,6 +41,7 @@ public class GameUI : MonoBehaviour
     // 게임 오버 실행 메서드
     void OnGameOver()
     {
+        Cursor.visible = true;
         StartCoroutine(Fade(Color.clear, Color.black, 1));
         gameOverUI.SetActive(true);
     }

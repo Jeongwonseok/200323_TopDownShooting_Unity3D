@@ -110,6 +110,7 @@ public class Gun : MonoBehaviour
         }
     }
 
+    // 재장전 메서드
     public void Reload()
     {
         if(!isReloading && projectilesRemainingInMag != projectilesPerMag)
@@ -119,6 +120,7 @@ public class Gun : MonoBehaviour
         }
     }
 
+    // 재장전 Animation 코루틴
     IEnumerator AnimateReload()
     {
         isReloading = true;
@@ -143,6 +145,7 @@ public class Gun : MonoBehaviour
         projectilesRemainingInMag = projectilesPerMag;
     }
 
+    // 총 Aim 디테일 메서드
     public void Aim(Vector3 aimPoint)
     {
         if(!isReloading)
