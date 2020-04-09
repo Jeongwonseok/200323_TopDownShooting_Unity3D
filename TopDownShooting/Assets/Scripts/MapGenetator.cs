@@ -66,9 +66,9 @@ public class MapGenetator : MonoBehaviour
         string holderName = "Generated Map";
 
         // 에디터에서 호출하려면 DestroyImmediate() 사용
-        if(transform.FindChild(holderName))
+        if(transform.Find(holderName))
         {
-            DestroyImmediate(transform.FindChild(holderName).gameObject);
+            DestroyImmediate(transform.Find(holderName).gameObject);
         }
 
         Transform mapHolder = new GameObject(holderName).transform;

@@ -81,6 +81,10 @@ public class Player : LivingEntity
         {
             gunController.Reload();
         }
+        if(transform.position.y < -10)
+        {
+            TakeDamage(health);
+        }
     }
 
     // 플레이어 죽으면 사운드 Override

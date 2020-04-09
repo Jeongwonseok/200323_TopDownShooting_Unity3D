@@ -32,29 +32,33 @@ public class Menu : MonoBehaviour
         fullscreenToggle.isOn = isFullscreen;
     }
 
-
+    // 게임 시작
     public void Play()
     {
         SceneManager.LoadScene("Game");
     }
 
+    // 게임 종료
     public void Quit()
     {
         Application.Quit();
     }
 
+    // 옵션 메뉴
     public void OptionsMenu()
     {
         mainMenuHolder.SetActive(false);
         optionsMenuHolder.SetActive(true);
     }
 
+    // 메인 메뉴
     public void MainMenu()
     {
         mainMenuHolder.SetActive(true);
         optionsMenuHolder.SetActive(false);
     }
 
+    // 스크린 크기 설정
     public void SetScreenResolution(int i)
     {
         if (resolutionToggles[i].isOn)
@@ -67,6 +71,7 @@ public class Menu : MonoBehaviour
         }
     }
 
+    // 풀 스크린 설정
     public void SetFullscreen(bool isFullscreen)
     {
         for (int i = 0; i < resolutionToggles.Length; i++)
@@ -89,16 +94,19 @@ public class Menu : MonoBehaviour
         PlayerPrefs.Save();
     }
 
+    // 마스터 볼륨 설정
     public void SetMasterVolume(float value)
     {
         AudioManager.instance.SetVolume(value, AudioManager.AudioChannel.Master);
     }
 
+    // BGM 볼륨 설정
     public void SetMusicVolume(float value)
     {
         AudioManager.instance.SetVolume(value, AudioManager.AudioChannel.Music);
     }
 
+    // 효과음 볼륨 설정
     public void SetSfxVolume(float value)
     {
         AudioManager.instance.SetVolume(value, AudioManager.AudioChannel.Sfx);

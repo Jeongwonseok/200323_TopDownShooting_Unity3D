@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GameUI : MonoBehaviour
 {
@@ -12,12 +13,22 @@ public class GameUI : MonoBehaviour
     public RectTransform newWaveBanner;
     public Text newWaveTitle;
     public Text newWaveEnemyCount;
+	public Text newWaveLifeCount;
+
+    // Score UI
+    public Text scoreUI;
+    public Text gameOverScoreUI;
+
+    // HP UI
+    public RectTransform healthBar;
 
     Spawner spawner;
+    Player player;
 
     void Start()
     {
-        FindObjectOfType<Player>().OnDeath += OnGameOver;
+        player = FindObjectOfType<Player>();
+        player.OnDeath += OnGameOver;
     }
 
     void Awake()
@@ -26,15 +37,28 @@ public class GameUI : MonoBehaviour
         spawner.OnNewWave += OnNewWave;
     }
 
+    void Update()
+    {
+        scoreUI.text = ScoreKeeper.score.ToString("D6");
+        float healthPercent = 0;
+        if(player != null)
+        { 
+            healthPercent = player.health / player.startingHealth;
+        }
+        healthBar.localScale = new Vector3(healthPercent, 1, 1);
+    }
+
     // 웨이브 전환 UI
     void OnNewWave(int waveNumber)
     {
         string[] numbers = { "One", "Two", "Three", "Four", "Five" };
         newWaveTitle.text = "- Wave " + numbers[waveNumber - 1] + " -";
         string enemyCountString = ((spawner.waves[waveNumber - 1].infinite) ? "Infinite" : spawner.waves[waveNumber - 1].enemyCount + "");
-        newWaveEnemyCount.text = "Enemies: " + enemyCountString;
+        newWaveEnemyCount.text = "Enemies Count: " + enemyCountString;
+		string playerHP = spawner.waves[waveNumber - 1].hitsToKillPlayer + "";
+		newWaveLifeCount.text = "Player HP: " + playerHP;
 
-        StopCoroutine("AnimateNewWaveBanner");
+		StopCoroutine("AnimateNewWaveBanner");
         StartCoroutine("AnimateNewWaveBanner");
     }
 
@@ -42,7 +66,10 @@ public class GameUI : MonoBehaviour
     void OnGameOver()
     {
         Cursor.visible = true;
-        StartCoroutine(Fade(Color.clear, Color.black, 1));
+        StartCoroutine(Fade(Color.clear, new Color(0,0,0,0.95f), 1));
+        gameOverScoreUI.text = scoreUI.text;
+        scoreUI.gameObject.SetActive(false);
+        healthBar.transform.parent.gameObject.SetActive(false);
         gameOverUI.SetActive(true);
     }
 
@@ -89,9 +116,15 @@ public class GameUI : MonoBehaviour
         }
     }
 
-    // UI Input
+    // Game return
     public void StartNewGame()
     {
-        Application.LoadLevel("Game");
+        SceneManager.LoadScene("Game");
+    }
+
+    // Menu return
+    public void ReturnToMainMenu()
+    {
+        SceneManager.LoadScene("Menu");
     }
 }

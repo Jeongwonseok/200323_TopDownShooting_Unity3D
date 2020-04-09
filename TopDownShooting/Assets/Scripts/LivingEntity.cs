@@ -5,8 +5,8 @@ using UnityEngine;
 public class LivingEntity : MonoBehaviour, IDamageable
 {
     public float startingHealth;
-    protected float health; // 상속받아야 사용 가능
-    protected bool dead;
+    public float health { get; protected set; }
+    protected bool dead; // 상속받아야 사용 가능
 
     // 적 죽음 감지 이벤트 생성
     // System.Action (델리게이트 메소드) : 다를 메소드의 위치를 가르키고 불러올 수 있는 타입 (포인터와 비슷하다.)
