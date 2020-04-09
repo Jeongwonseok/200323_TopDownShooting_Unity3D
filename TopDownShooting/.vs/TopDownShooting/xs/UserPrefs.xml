@@ -1,7 +1,9 @@
 ﻿<Properties StartupConfiguration="{18B3D262-EE77-B2DB-C3BE-F5AD584479F7}|">
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/GunController.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Menu.cs">
     <Files>
       <File FileName="Assets/Scripts/GunController.cs" Line="5" Column="35" />
+      <File FileName="Assets/Scripts/AudioManager.cs" Line="57" Column="52" />
+      <File FileName="Assets/Scripts/Menu.cs" Line="66" Column="32" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
@@ -10,7 +12,7 @@
             <Node name="Assets" expanded="True">
               <Node name="Editor" expanded="True" />
               <Node name="Scripts" expanded="True">
-                <Node name="GunController.cs" selected="True" />
+                <Node name="Menu.cs" selected="True" />
               </Node>
             </Node>
           </Node>
@@ -20,7 +22,7 @@
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="b3d181dc-8d57-48a9-96a8-50bde3c26a59" />
+  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="a58d4e59-e98b-402e-a717-eef181467170" />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>

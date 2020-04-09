@@ -11242,7 +11242,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2024098073}
   - component: {fileID: 2024098075}
-  - component: {fileID: 2024098074}
   m_Layer: 0
   m_Name: Crosshairs camera
   m_TagString: Untagged
@@ -11264,14 +11263,6 @@ Transform:
   m_Father: {fileID: 963194228}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 75.772, y: 0, z: 0}
---- !u!81 &2024098074
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2024098072}
-  m_Enabled: 1
 --- !u!20 &2024098075
 Camera:
   m_ObjectHideFlags: 0

@@ -4,11 +4,12 @@ using UnityEngine;
 
 public class AudioManager : MonoBehaviour
 {
-    public enum AudioChannel{Master, Sfx, Music};
 
-    float masterVolumePercent = 0.2f;
-    float sfxVolumePercent = 5f;
-    float musicVolumePercent = 1f;
+    public enum AudioChannel { Master, Sfx, Music };
+
+    public float masterVolumePercent { get; private set; }
+    public float sfxVolumePercent { get; private set; }
+    public float musicVolumePercent { get; private set; }
 
     AudioSource sfx2DSource;
     AudioSource[] musicSources;
@@ -23,12 +24,14 @@ public class AudioManager : MonoBehaviour
 
     void Awake()
     {
-        if(instance != null)
+
+        if (instance != null)
         {
             Destroy(gameObject);
         }
         else
         {
+
             instance = this;
             DontDestroyOnLoad(gameObject);
 
@@ -41,32 +44,33 @@ public class AudioManager : MonoBehaviour
                 musicSources[i] = newMusicSource.AddComponent<AudioSource>();
                 newMusicSource.transform.parent = transform;
             }
-
-            GameObject newSfx2DSource = new GameObject("2D sfx source");
-            sfx2DSource = newSfx2DSource.AddComponent<AudioSource>();
-            newSfx2DSource.transform.parent = transform;
+            GameObject newSfx2Dsource = new GameObject("2D sfx source");
+            sfx2DSource = newSfx2Dsource.AddComponent<AudioSource>();
+            newSfx2Dsource.transform.parent = transform;
 
             audioListener = FindObjectOfType<AudioListener>().transform;
-            playerT = FindObjectOfType<Player>().transform;
+            if (FindObjectOfType<Player>() != null)
+            {
+                playerT = FindObjectOfType<Player>().transform;
+            }
 
-            masterVolumePercent = PlayerPrefs.GetFloat("master vol", masterVolumePercent);
-            sfxVolumePercent = PlayerPrefs.GetFloat("sfx vol", sfxVolumePercent);
-            musicVolumePercent = PlayerPrefs.GetFloat("music vol", musicVolumePercent);
+            masterVolumePercent = PlayerPrefs.GetFloat("master vol", 1);
+            sfxVolumePercent = PlayerPrefs.GetFloat("sfx vol", 1);
+            musicVolumePercent = PlayerPrefs.GetFloat("music vol", 1);
         }
     }
 
     void Update()
     {
-        if(playerT != null)
+        if (playerT != null)
         {
             audioListener.position = playerT.position;
         }
     }
 
-    // 사운드 볼륨 설정 메서드
     public void SetVolume(float volumePercent, AudioChannel channel)
     {
-        switch(channel)
+        switch (channel)
         {
             case AudioChannel.Master:
                 masterVolumePercent = volumePercent;
@@ -85,9 +89,9 @@ public class AudioManager : MonoBehaviour
         PlayerPrefs.SetFloat("master vol", masterVolumePercent);
         PlayerPrefs.SetFloat("sfx vol", sfxVolumePercent);
         PlayerPrefs.SetFloat("music vol", musicVolumePercent);
+        PlayerPrefs.Save();
     }
 
-    // BGM Play 메서드 (메인, 메뉴)
     public void PlayMusic(AudioClip clip, float fadeDuration = 1)
     {
         activeMusicSourceIndex = 1 - activeMusicSourceIndex;
@@ -97,33 +101,30 @@ public class AudioManager : MonoBehaviour
         StartCoroutine(AnimateMusicCrossfade(fadeDuration));
     }
 
-    // Effect Play 메서드 (총 쏘기, 재장전)
     public void PlaySound(AudioClip clip, Vector3 pos)
     {
-        if(clip != null)
+        if (clip != null)
         {
             AudioSource.PlayClipAtPoint(clip, pos, sfxVolumePercent * masterVolumePercent);
         }
     }
 
-    // Effect Play 메서드 (적 사망, 적 공격, 플레이어 사망) 
     public void PlaySound(string soundName, Vector3 pos)
     {
         PlaySound(library.GetClipFromName(soundName), pos);
     }
 
-    // 2D Effect Play 메서드 (Next Wave 효과음)
     public void PlaySound2D(string soundName)
     {
         sfx2DSource.PlayOneShot(library.GetClipFromName(soundName), sfxVolumePercent * masterVolumePercent);
     }
 
-    // BGM 전환 시 Sound Animation 발동 코루틴
+
     IEnumerator AnimateMusicCrossfade(float duration)
     {
         float percent = 0;
 
-        while(percent < 1)
+        while (percent < 1)
         {
             percent += Time.deltaTime * 1 / duration;
             musicSources[activeMusicSourceIndex].volume = Mathf.Lerp(0, musicVolumePercent * masterVolumePercent, percent);
