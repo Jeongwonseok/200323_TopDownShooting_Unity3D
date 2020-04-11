@@ -8,6 +8,7 @@ public class Menu : MonoBehaviour
 {
     public GameObject mainMenuHolder;
     public GameObject optionsMenuHolder;
+    public GameObject controlMenuHolder;
 
     public Slider[] volumeSliders;
     public Toggle[] resolutionToggles;
@@ -53,11 +54,25 @@ public class Menu : MonoBehaviour
         optionsMenuHolder.SetActive(true);
     }
 
-    // 메인 메뉴
+    // 컨트롤 메뉴
+    public void ControlMenu()
+    {
+        mainMenuHolder.SetActive(false);
+        controlMenuHolder.SetActive(true);
+    }
+
+    // 옵션 to 메인 메뉴
     public void MainMenu()
     {
         mainMenuHolder.SetActive(true);
         optionsMenuHolder.SetActive(false);
+    }
+
+    // 컨트롤 to 메인 메뉴
+    public void ControlToMain()
+    {
+        mainMenuHolder.SetActive(true);
+        controlMenuHolder.SetActive(false);
     }
 
     // 스크린 크기 설정

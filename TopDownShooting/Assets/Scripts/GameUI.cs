@@ -18,6 +18,7 @@ public class GameUI : MonoBehaviour
     // Score UI
     public Text scoreUI;
     public Text gameOverScoreUI;
+    public Text comboUI;
 
     // HP UI
     public RectTransform healthBar;
@@ -53,6 +54,7 @@ public class GameUI : MonoBehaviour
 
     void Update()
     {
+        // Score & HP 갱신
         scoreUI.text = ScoreKeeper.score.ToString("D6");
         float healthPercent = 0;
         if(player != null)
@@ -60,6 +62,9 @@ public class GameUI : MonoBehaviour
             healthPercent = player.health / player.startingHealth;
         }
         healthBar.localScale = new Vector3(healthPercent, 1, 1);
+
+        // Combo 갱신
+        comboUI.text = ScoreKeeper.streakCount.ToString();
 
         OnPause();
     }

@@ -8,7 +8,7 @@ public class ScoreKeeper : MonoBehaviour
     float lastEnemyKillTime;
     public static int streakCount;
     float streakExpiryTime = 1;
-    //int comboCount = 0;
+    int comboCount;
 
     void Start()
     {
@@ -29,15 +29,15 @@ public class ScoreKeeper : MonoBehaviour
         }
         lastEnemyKillTime = Time.time;
 
-        score += 1 + (int)Mathf.Pow(2, streakCount);
-        //comboCount = comboCount + streakCount;
+        score += 1 + streakCount;
+        //score += 1 + (int)Mathf.Pow(2, streakCount);
+        comboCount =  streakCount;
     }
 
     void OnPlayerDeath()
     {
         Enemy.OnDeathStatic -= OnEnemyKiiled;
         score = 0;
-        //comboCount = 0;
     }
 
 }

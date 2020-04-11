@@ -186,7 +186,7 @@ public class Enemy : LivingEntity
                 Vector3 dirToTarget = (target.position - transform.position).normalized;
                 // 타겟 위치 = 실제 타겟 위치 - 목표까지의 방향 * (적 반지름 + 타겟 반지름 + 공격 한계 거리/2)
                 Vector3 targetPosition = target.position - dirToTarget * (myCollisionRadius + targetCollisionRadius + attackDistanceThreshold/2);
-                if (!dead)
+                if (!dead && hasTarget)
                 {
                     pathFinder.SetDestination(targetPosition);
                 }
