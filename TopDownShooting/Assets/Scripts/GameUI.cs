@@ -22,13 +22,27 @@ public class GameUI : MonoBehaviour
     // HP UI
     public RectTransform healthBar;
 
+    // Pause UI
+    public GameObject pauseUI;
+
+    // Info UI
+    public GameObject InfoUI;
+
+    ScoreKeeper keeper;
+
     Spawner spawner;
     Player player;
 
+    private bool isPause;
+
     void Start()
     {
+        pauseUI.SetActive(false);
+        InfoUI.SetActive(false);
+
         player = FindObjectOfType<Player>();
         player.OnDeath += OnGameOver;
+        keeper = GetComponent<ScoreKeeper>();
     }
 
     void Awake()
@@ -46,6 +60,47 @@ public class GameUI : MonoBehaviour
             healthPercent = player.health / player.startingHealth;
         }
         healthBar.localScale = new Vector3(healthPercent, 1, 1);
+
+        OnPause();
+    }
+
+    public void OnPause()
+    {
+        if(Input.GetKeyDown(KeyCode.Space))
+        {
+            isPause = !isPause;
+        }
+
+        if(isPause)
+        {
+            Cursor.visible = true;
+            pauseUI.SetActive(true);
+            Time.timeScale = 0;
+        }
+
+        if (!isPause)
+        {
+            pauseUI.SetActive(false);
+            Time.timeScale = 1f;
+        }
+    }
+
+    public void Info()
+    {
+        pauseUI.SetActive(false);
+        InfoUI.SetActive(true);
+    }
+
+    public void Cancel()
+    {
+        Cursor.visible = false;
+        isPause = !isPause;
+    }
+
+    public void Cancel_info()
+    {
+        InfoUI.SetActive(false);
+        pauseUI.SetActive(true);
     }
 
     // 웨이브 전환 UI
@@ -127,4 +182,5 @@ public class GameUI : MonoBehaviour
     {
         SceneManager.LoadScene("Menu");
     }
+
 }

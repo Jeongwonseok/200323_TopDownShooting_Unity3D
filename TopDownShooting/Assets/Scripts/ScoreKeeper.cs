@@ -6,8 +6,9 @@ public class ScoreKeeper : MonoBehaviour
 {
     public static int score { get; private set; }
     float lastEnemyKillTime;
-    int streakCount;
+    public static int streakCount;
     float streakExpiryTime = 1;
+    //int comboCount = 0;
 
     void Start()
     {
@@ -15,7 +16,7 @@ public class ScoreKeeper : MonoBehaviour
         FindObjectOfType<Player>().OnDeath += OnPlayerDeath;
     }
 
-    // 적 죽으면 점수 증가 >> 5 + (2의 죽은 적의 수 제곱)
+    // 적 죽으면 점수 증가 >> 2점씩 >> But, 1초안에 다음 적 죽이면 콤보 가능
     void OnEnemyKiiled()
     {
         if(Time.time < lastEnemyKillTime + streakExpiryTime)
@@ -28,11 +29,15 @@ public class ScoreKeeper : MonoBehaviour
         }
         lastEnemyKillTime = Time.time;
 
-        score += 5 + (int)Mathf.Pow(2, streakCount);
+        score += 1 + (int)Mathf.Pow(2, streakCount);
+        //comboCount = comboCount + streakCount;
     }
 
     void OnPlayerDeath()
     {
         Enemy.OnDeathStatic -= OnEnemyKiiled;
+        score = 0;
+        //comboCount = 0;
     }
+
 }

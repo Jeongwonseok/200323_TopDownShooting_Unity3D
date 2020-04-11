@@ -74,7 +74,7 @@ public class Spawner : MonoBehaviour
         // 개발자 모드 추가
         if(devMode)
         {
-            if(Input.GetKeyDown(KeyCode.Space))
+            if(Input.GetKeyDown(KeyCode.Return))
             {
                 StopCoroutine("SpawnEnemy");
 
